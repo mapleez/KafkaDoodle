@@ -28,7 +28,7 @@ public class FileKafkaProducer {
 	            
 	            while ((lineTxt = bufferedReader.readLine ()) != null && i <= 10000){
 	            	
-	            	String line = lineTxt.trim ();	            	
+	            	String line = lineTxt.trim ();
 	        		container.add (line);
 	        		++ i;
 	            }
@@ -85,9 +85,11 @@ public class FileKafkaProducer {
 		ProducerEngine engine = new ProducerEngine (prop);
 		
 		while (true) {
+			System.out.println ("Start sending [" + System.currentTimeMillis () + "].");
 			engine.send (datas);
-			sleep (100);
-			System.out.print (".");
+			System.out.println ("finish sending [" + System.currentTimeMillis () + "].");
+			sleep (5000);
+			
 		}
 	
 	}
