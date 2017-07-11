@@ -1,4 +1,4 @@
-package com.joinbright.alarmer.service;
+package org.dt.ez.kafka.tools.former;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,18 +10,18 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 public class ConsumerService {
 
-	private KafkaConsumer<String, String> consumer;
+	private KafkaConsumer <String, String> consumer;
 	private int batchSize;
 	private int pollTime;
 
-	public ConsumerService(Properties props) {
+	public ConsumerService (Properties props) {
 		this.consumer = ConsumerFactory.create (props);
 		this.batchSize = 1;
 		this.pollTime = 100;
 	}
 
-	public ConsumerRecords<String, String> poll(int ms) {
-		return consumer.poll(ms);
+	public ConsumerRecords<String, String> poll (int ms) {
+		return consumer.poll (ms);
 	}
 
 	/**
@@ -29,15 +29,13 @@ public class ConsumerService {
 	 * 
 	 * @return
 	 */
-	public List<String> getMessages() {
-//		List<ConsumerRecord<String, String>> buffer = new ArrayList <>();
-		List<String> messages = new ArrayList <String> ();
+	public List <String> getMessages () {
+		List <String> messages = new ArrayList <String> ();
 		// Get Record
 		do {
-			ConsumerRecords<String, String> records = consumer.poll(pollTime);
-			for (ConsumerRecord<String, String> record : records) {
+			ConsumerRecords<String, String> records = consumer.poll (pollTime);
+			for (ConsumerRecord <String, String> record : records) {
 				messages.add (record.value ());
-//				buffer.add(record);
 			}
 		} while (messages.size () < batchSize);
 		return messages;

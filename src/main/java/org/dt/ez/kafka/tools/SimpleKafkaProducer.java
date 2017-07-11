@@ -1,8 +1,8 @@
-package com.joinbright.kafka.tools;
+package org.dt.ez.kafka.tools;
 
 import java.util.Properties;
 
-import com.joinbright.alarmer.service.ProducerEngine;
+import org.dt.ez.kafka.tools.former.ProducerEngine;
 
 
 public class SimpleKafkaProducer {
@@ -13,17 +13,27 @@ public class SimpleKafkaProducer {
 //		"{\"DATETIME\":\"20170607135353\",\"TYPE\":\"0\",\"YWDW\":\"null\",\"SBBM\":\"0002\",\"JZBM\":\"130602000003\",\"value\":[{\"POINTCODE\":\"130602000003000200000007\",\"DATA\":\"42.7000\",\"GUID\":\"1d184e75-ee6f-470c-8e2b-788696e7c24c\",\"EVT_STATION\":\"[未知运维单位]\",\"EVT_INFO\":\"[未知设备]:频率偏差（频率偏差越限）\",\"TERM_ID\":\"[未知测点]\"}]}"
 //	};
 
+	/**
+	 * 
+	 * @param args
+	 * 	args [0] -> bootstrap servers
+	 *  args [1] -> topics
+	 *  args [2] -> SASL file
+	 */
 	public static void main (String [] args) {
-		
 		String [] datas = {
 			"1",
 			"2",
 			"3"
 		};
 		
+		if (args.length < 3) {
+			System.err.println ("ERROR arguments : <bootstrap_servers> <topics> <groupid> <SASLfile>.");
+		}
+		
 		Properties prop = new Properties ();
-		prop.put ("producer.topic", "eztest");
-		prop.put ("producer.bootstrap.servers", "vubuntuez1:9092,vdebianez3:9092,vcentosez1:2181");
+		prop.put ("producer.topic", args [1]);
+		prop.put ("producer.bootstrap.servers", args [0]);
 		
 		prop.put ("acks", "all");
 		prop.put ("retries", 0);
@@ -38,7 +48,7 @@ public class SimpleKafkaProducer {
 		prop.setProperty ("sasl.mechanism", "PLAIN");
 		
 		/* SASL JAAS file. */
-		System.setProperty ("java.security.auth.login.config", "conf/kafka_client_jaas.conf");
+		System.setProperty ("java.security.auth.login.config", args [2]);
 		ProducerEngine engine = new ProducerEngine (prop);
 		
 		while (true) {

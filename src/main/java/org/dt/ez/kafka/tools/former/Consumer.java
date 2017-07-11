@@ -1,4 +1,4 @@
-package com.joinbright.alarmer.service;
+package org.dt.ez.kafka.tools.former;
 
 import java.util.Properties;
 

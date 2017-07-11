@@ -4,6 +4,7 @@ import java.util.Properties;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 
 public class ConsumerService <K, V> {
 	
@@ -34,10 +36,21 @@ public class ConsumerService <K, V> {
 		
 		initConfigurable (props);
 		
+		String topics = props.getProperty (ConfigKey.KAFKA_CONSUMER_TOPICS, "eztest");
+		
 		consumer = new KafkaConsumer <K, V> (props);
-		consumer.subscribe (splitTopics2Collection (
-			props.getProperty (ConfigKey.KAFKA_CONSUMER_TOPICS, "eztest")));
+		TopicPartition tp = new TopicPartition (topics, 24);
+		consumer.assign (Arrays.asList (tp));
+		seekToBegin (tp);
+		
+//		consumer.subscribe (splitTopics2Collection (
+//			props.getProperty (ConfigKey.KAFKA_CONSUMER_TOPICS, "eztest")));
 		buffer = outputBuffer;
+	}
+	
+	private void seekToBegin (TopicPartition tp) {
+		consumer.seekToBeginning (Arrays.asList (tp));
+		consumer.position (tp);
 	}
 	
 	private void initConfigurable (Properties props) {
@@ -83,6 +96,7 @@ public class ConsumerService <K, V> {
 			consumer.getMessages ();
 			displayMessage (buffer);
 			consumer.commitSync ();
+			System.out.print (".");
 		} while (true);
 	}
 	
@@ -94,23 +108,23 @@ public class ConsumerService <K, V> {
 	
 	private static Properties getProperties () {
 		Properties props = new Properties ();
-		InputStream inStream = ConsumerService.class.getClassLoader()
-			.getResourceAsStream ("config.properties");
-		try {
-			props.load (inStream);
-		} catch (IOException e) {
-			e.printStackTrace ();
-		}
+//		InputStream inStream = ConsumerService.class.getClassLoader ()
+//			.getResourceAsStream ("/home/ez/eclipse/KafkaDoodle/src/main/resources/config.properties");
+//		try {
+//			props.load (inStream);
+//		} catch (IOException e) {
+//			e.printStackTrace ();
+//		}
 		
+		props.setProperty (ConfigKey.KAFKA_CONSUMER_TOPICS, "ez");
+		props.setProperty (ConfigKey.KAFKA_CONSUMER_POLL_TIME, "100");
+		props.setProperty (ConfigKey.KAFKA_BOOTSTRAP_LIST, "localhost:9092");
+		props.setProperty (ConfigKey.KAFKA_VALUE_DESERIALIZER, 
+			"org.apache.kafka.common.serialization.StringDeserializer");
+		props.setProperty (ConfigKey.KAFKA_KEY_DESERIALIZER, 
+			"org.apache.kafka.common.serialization.StringDeserializer");
+		props.setProperty (ConfigKey.KAFKA_GROUP_ID, "eztests");
 		return props;
-//		props.setProperty (ConfigKey.KAFKA_CONSUMER_TOPICS, "iot");
-//		props.setProperty (ConfigKey.KAFKA_CONSUMER_POLL_TIME, "100");
-//		props.setProperty (ConfigKey.KAFKA_BOOTSTRAP_LIST, "M1:9092");
-//		props.setProperty (ConfigKey.KAFKA_VALUE_DESERIALIZER, 
-//			"org.apache.kafka.common.serialization.StringDeserializer");
-//		props.setProperty (ConfigKey.KAFKA_KEY_DESERIALIZER, 
-//			"org.apache.kafka.common.serialization.StringDeserializer");
-//		props.setProperty (ConfigKey.KAFKA_GROUP_ID, "eztests");
 	}
 	
 }
