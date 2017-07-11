@@ -1,13 +1,14 @@
-KafkaDoodle程序
+KafkaDoodle
 --------------
 
-一个简单的Kafka客户端程序，包括简单的生产者和消费者。
+A simple kafka client programs. Including producer and consumer. 
 
-**说明**
-__dep为部署目录__，编译成功的KafkaDoodle jar可以直接放置在dep/lib下，并使用dep/bin中的启动脚本测试使用。
 
-**发布者**
-杨恩泽
+**Describe**
+__dep/ is a deployment directory.__. A compiled KafkaDoodle.jar shell be moved into dep/lib，and we use scripts in dep/bin to boot them.
 
-**v0.0.1发布时间**
+**Author**
+ez
+
+**Release v0.0.1**
 2017/6/21
