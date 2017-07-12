@@ -5,6 +5,7 @@ import java.util.Properties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.dt.ez.common.utils.Pair;
 
 /**
  * Kafka生产者数据引擎
@@ -35,9 +36,16 @@ public class ProducerEngine {
 	 * @param messages
 	 *            KafKa消息
 	 */
-	public void send(String... messages) {
+	public void send (String... messages) {
 		for (int i = 0, n = messages.length; i < n; i++)
 			producer.send(new ProducerRecord<String, String>(topic, messages[i]));
+	}
+	
+	public void send (Pair <String, String> [] msgs) {
+		for (Pair <String, String> msg : msgs) {
+			producer.send (new ProducerRecord <String, String> 
+				(topic, msg.getFirst (), msg.getSecond ()));
+		}
 	}
 
 	/**

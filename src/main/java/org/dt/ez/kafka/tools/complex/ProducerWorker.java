@@ -7,7 +7,7 @@ import org.dt.ez.kafka.tools.former.ProducerEngine;
 public class ProducerWorker implements Runnable {
 
 	private ProducerEngine engine;
-	public static String [] datas;
+	public String [] datas;
 	private static Logger logger = Logger.getLogger (ProducerWorker.class);
 	
 	public ProducerWorker (Properties props) {

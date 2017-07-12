@@ -8,11 +8,16 @@ import org.dt.ez.kafka.tools.former.ConsumerService;
 public class ConsumerWorker implements Runnable {
 	
 	private ConsumerService consumer;
+	private long workerId;
 	
 	public ConsumerWorker (Properties props) {
 		consumer = new ConsumerService (props);
 	}
 	
+	public ConsumerWorker setWorkerId (long workerId) {
+		this.workerId = workerId;
+		return this;
+	}
 
 	@Override
 	public void run () {
@@ -31,7 +36,7 @@ public class ConsumerWorker implements Runnable {
 	private void consumeMessage (ConsumerService consumer) {
 		List <String> msgs = consumer.getMessages ();
 		for (String msg : msgs)
-			System.out.println (msg);
+			System.out.println (workerId  + " " + msg);
 	}
 	
 }

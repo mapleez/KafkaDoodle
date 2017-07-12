@@ -83,8 +83,10 @@ public class MultipleThreadKafkaConsumer {
 	}
 	
 	private static void initThreads () {
-		for (int i = 0; i < threadNum; ++ i)
+		for (int i = 0; i < threadNum; ++ i) {
 			workers [i] = new ConsumerWorker (props);
+			workers [i].setWorkerId (i + 1);
+		}
 	}
 	
 }

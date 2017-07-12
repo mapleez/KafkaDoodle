@@ -1,10 +1,12 @@
-package org.dt.ez.kafka.tools.complex;
+package org.dt.ez.kafka.doodle.partitions;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MultipleThreadKafkaProducer {
+//import org.dt.ez.kafka.tools.complex.DataStrategy;
+
+public class MultiSeqDataProducer {
 	
 	private static int threadNum;
 	
@@ -24,22 +26,17 @@ public class MultipleThreadKafkaProducer {
 	 */
 	private static Properties prop;
 	
-	/**
-	 * Datas.
-	 */
-	private static String [] datas;
 
 	/**
 	 * @param args
 	 * 	args [0] -> bootstrap servers
 	 *  args [1] -> topics
-	 *  args [2] -> data file
-	 *  args [3] -> thread number
-	 *  args [4] -> SASL file
+	 *  args [2] -> thread number
+	 *  args [3] -> SASL file
 	 */
 	public static void main (String [] args) {
-		if (args.length < 4) {
-			System.err.println ("ERROR arguments : <bootstrap_servers> <topics> <data_file> <thread_num> [<SASLfile>].");
+		if (args.length < 3) {
+			System.err.println ("ERROR arguments : <bootstrap_servers> <topics> <thread_num> [<SASLfile>].");
 			System.exit (1);
 		}
 		
@@ -55,29 +52,26 @@ public class MultipleThreadKafkaProducer {
 		prop.put ("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 		prop.put ("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 		
-		datas = DataStrategy.parseFromArgument (args [2]);
-		threadNum = Integer.parseInt (args [3]);
-		if (threadNum <= 0) threadNum = 0;
+		threadNum = Integer.parseInt (args [2]);
+		if (threadNum <= 0) threadNum = 1;
 		
 		threadPool = Executors.newFixedThreadPool (threadNum);
 		workers = new ProducerWorker [threadNum];
 		
 		/* For SASL */
-		if (args.length > 4) {
+		if (args.length > 3) {
 			/* For SASL configuration*/
 			prop.setProperty ("security.protocol", "SASL_PLAINTEXT");
 			prop.setProperty ("sasl.mechanism", "PLAIN");
 			
 			/* SASL JAAS file. */
-			System.setProperty ("java.security.auth.login.config", args [4]);
+			System.setProperty ("java.security.auth.login.config", args [3]);
 		}
 		
 		initThreads ();
 		startThreads ();
-		
-	}
-	
 
+	}
 	
 	private static void startThreads () {
 		for (ProducerWorker worker : workers)
@@ -88,9 +82,18 @@ public class MultipleThreadKafkaProducer {
 	private static void initThreads () {
 		for (int i = 0; i < threadNum; ++ i) {
 			workers [i] = new ProducerWorker (prop);
-			workers [i].datas = datas;
+			int workerID = i * 3;
+			workers [i].setWorkerID (workerID);
+			
+			SequenceData dataSource = new SequenceData (10)
+				.registerTag ("A" + workerID)
+				.registerTag ("A" + (workerID + 1))
+				.registerTag ("A" + (workerID + 2));
+			
+			workers [i].setData (dataSource);
 		}
 	}
 }
+
 
 
